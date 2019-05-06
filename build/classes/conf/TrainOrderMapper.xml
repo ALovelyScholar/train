@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.spring.dao.TrainOrderMapper" >
+  <resultMap id="BaseResultMap" type="com.spring.entity.TrainOrder" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="trian_id" property="trianId" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="start_address" property="startAddress" jdbcType="VARCHAR" />
+    <result column="start_station_id" property="startStationId" jdbcType="BIGINT" />
+    <result column="end_address" property="endAddress" jdbcType="VARCHAR" />
+    <result column="end_station_id" property="endStationId" jdbcType="BIGINT" />
+    <result column="trian_car_id" property="trianCarId" jdbcType="INTEGER" />
+    <result column="car_no" property="carNo" jdbcType="INTEGER" />
+    <result column="seat_num" property="seatNum" jdbcType="INTEGER" />
+    <result column="train_date" property="trainDate" jdbcType="DATE" />
+    <result column="train_time" property="trainTime" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="train_type" property="trainType" jdbcType="INTEGER" />
+     <result column="state" property="state" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, trian_id, user_id,start_address, start_station_id, end_address, end_station_id, trian_car_id,car_no 
+    seat_num, train_date, train_time, price,train_type,state
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from train_order
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+   <select id="findOrderByMap" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from train_order
+    where train_date=#{nowDate} 
+    and state in(1,3)
+    <if test="trainId!=null">
+    	and trian_id=#{trainId} 
+    </if>
+    <if test="trainType!=null">
+    	and train_type=#{trainType} 
+    </if>
+    order by car_no
+  </select>
+  
+  <select id="findByPage" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+   	o.id, o.trian_id, o.user_id,o.start_address, o.end_address, o.car_no,
+    o.seat_num, o.train_date, o.train_time, o.price,o.train_type,o.state,t.name
+    from train_order o join train t on o.trian_id=t.id
+    where 1=1
+    <if test="start!=null">
+    	and o.train_date&gt;=#{start} 
+    </if>
+    <if test="end!=null">
+    	and o.train_date&lt;=#{end} 
+    </if>
+    <if test="userId">
+    	and o.user_id=#{userId}
+    </if>
+    order by o.id desc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from train_order
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.spring.entity.TrainOrder" >
+    insert into train_order (trian_id,user_id, start_address, 
+      start_station_id, end_address, end_station_id, 
+      trian_car_id,car_no, seat_num, train_date, 
+      train_time, price,train_type)
+    values ( #{trianId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT}, #{startAddress,jdbcType=VARCHAR}, 
+      #{startStationId,jdbcType=BIGINT}, #{endAddress,jdbcType=VARCHAR}, #{endStationId,jdbcType=BIGINT}, 
+      #{trianCarId,jdbcType=INTEGER},#{carNo,jdbcType=INTEGER}, #{seatNum,jdbcType=INTEGER}, #{trainDate,jdbcType=DATE}, 
+      #{trainTime,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL},#{trainType,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.spring.entity.TrainOrder" >
+    update train_order
+    <set >
+      <if test="trianId != null" >
+        trian_id = #{trianId,jdbcType=BIGINT},
+      </if>
+      <if test="startAddress != null" >
+        start_address = #{startAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="startStationId != null" >
+        start_station_id = #{startStationId,jdbcType=BIGINT},
+      </if>
+      <if test="endAddress != null" >
+        end_address = #{endAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="endStationId != null" >
+        end_station_id = #{endStationId,jdbcType=BIGINT},
+      </if>
+      <if test="trianCarId != null" >
+        trian_car_id = #{trianCarId,jdbcType=INTEGER},
+      </if>
+      <if test="seatNum != null" >
+        seat_num = #{seatNum,jdbcType=INTEGER},
+      </if>
+      <if test="trainDate != null" >
+        train_date = #{trainDate,jdbcType=DATE},
+      </if>
+      <if test="trainTime != null" >
+        train_time = #{trainTime,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.spring.entity.TrainOrder" >
+    update train_order
+    set trian_id = #{trianId,jdbcType=BIGINT},
+      start_address = #{startAddress,jdbcType=VARCHAR},
+      start_station_id = #{startStationId,jdbcType=BIGINT},
+      end_address = #{endAddress,jdbcType=VARCHAR},
+      end_station_id = #{endStationId,jdbcType=BIGINT},
+      trian_car_id = #{trianCarId,jdbcType=INTEGER},
+      seat_num = #{seatNum,jdbcType=INTEGER},
+      train_date = #{trainDate,jdbcType=DATE},
+      train_time = #{trainTime,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

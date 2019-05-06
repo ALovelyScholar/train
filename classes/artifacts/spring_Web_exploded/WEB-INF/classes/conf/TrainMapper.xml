@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.spring.dao.TrainMapper" >
+  <resultMap id="BaseResultMap" type="com.spring.entity.Train" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="start_date" property="startDate" jdbcType="DATE" />
+    <result column="end_date" property="endDate" jdbcType="DATE" />
+    <result column="start_time" property="startTime" jdbcType="VARCHAR" />
+    <result column="end_time" property="endTime" jdbcType="VARCHAR" />
+    <result column="start_address" property="startAddress" jdbcType="VARCHAR" />
+    <result column="end_address" property="endAddress" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="sleep_price" property="sleepPrice" jdbcType="DECIMAL" />
+    <result column="seat_price" property="seatPrice" jdbcType="DECIMAL" />
+    <result column="stand_price" property="standPrice" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, start_date, end_date, start_time, end_time, start_address, end_address, 
+    type, sleep_price, seat_price, stand_price, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from train
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+   <select id="findByPage" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select
+   	DISTINCT t.id, t.name, t.start_date, t.end_date,
+   		 m.start_time ,
+		 m.end_time,
+		m.start_address,
+		m.end_address,
+   	 t.type, t.sleep_price, t.seat_price, t.stand_price
+     from train t
+     join
+	(select s.train_id,max(s.start_address) as start_address,max(s.end_address) as end_address,
+	max(s.start_time) as start_time,max(s.end_time) as end_time from (SELECT
+		train_id,
+		address AS start_address,
+		'' AS end_address,
+		start_time,
+		'' AS end_time
+	FROM
+		train_station
+	WHERE
+		address =#{start}
+	UNION
+		SELECT
+			train_id,
+			'',
+			address AS end_address,
+			'',
+			end_time
+		FROM
+			train_station
+		WHERE
+			address =#{end}) s group by s.train_id ) m on t.id=m.train_id
+    where m.end_address is not null and m.end_address!='' and valid=1 AND m.start_address != '' AND m.start_address IS NOT NULL
+    <if test="name!=null">
+    	and name=#{name}
+    </if>
+    <if test="nowDate!=null">
+    	and start_date&lt;=#{nowDate}
+    </if>
+    <if test="nowDate!=null">
+    	and end_date&gt;=#{nowDate}
+    </if>
+    <if test="trainId!=null">
+    	and t.id=#{trainId}
+    </if>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from train
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.spring.entity.Train" useGeneratedKeys="true" keyProperty="id">
+    insert into train (name, start_date, 
+      end_date, start_time, end_time, 
+      start_address, end_address, type, 
+      sleep_price, seat_price, stand_price, create_time)
+    values ( #{name,jdbcType=VARCHAR}, #{startDate,jdbcType=DATE}, 
+      #{endDate,jdbcType=DATE}, #{startTime,jdbcType=VARCHAR}, #{endTime,jdbcType=VARCHAR}, 
+      #{startAddress,jdbcType=VARCHAR}, #{endAddress,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
+      #{sleepPrice,jdbcType=DECIMAL}, #{seatPrice,jdbcType=DECIMAL}, #{standPrice,jdbcType=DECIMAL}, NOW())
+  </insert>
+  <insert id="insertSelective" parameterType="com.spring.entity.Train" >
+    insert into train
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="startDate != null" >
+        start_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="startAddress != null" >
+        start_address,
+      </if>
+      <if test="endAddress != null" >
+        end_address,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="sleepPrice != null" >
+        sleep_price,
+      </if>
+      <if test="seatPrice != null" >
+        seat_price,
+      </if>
+      <if test="standPrice != null" >
+        stand_price,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null" >
+        #{startDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=DATE},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=VARCHAR},
+      </if>
+      <if test="startAddress != null" >
+        #{startAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="endAddress != null" >
+        #{endAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="sleepPrice != null" >
+        #{sleepPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="seatPrice != null" >
+        #{seatPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="standPrice != null" >
+        #{standPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.spring.entity.Train" >
+    update train
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null" >
+        start_date = #{startDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=DATE},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=VARCHAR},
+      </if>
+      <if test="startAddress != null" >
+        start_address = #{startAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="endAddress != null" >
+        end_address = #{endAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="sleepPrice != null" >
+        sleep_price = #{sleepPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="seatPrice != null" >
+        seat_price = #{seatPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="standPrice != null" >
+        stand_price = #{standPrice,jdbcType=DECIMAL},
+      </if>
+       <if test="valid != null" >
+        valid = #{valid},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.spring.entity.Train" >
+    update train
+    set name = #{name,jdbcType=VARCHAR},
+      start_date = #{startDate,jdbcType=DATE},
+      end_date = #{endDate,jdbcType=DATE},
+      start_time = #{startTime,jdbcType=VARCHAR},
+      end_time = #{endTime,jdbcType=VARCHAR},
+      start_address = #{startAddress,jdbcType=VARCHAR},
+      end_address = #{endAddress,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      sleep_price = #{sleepPrice,jdbcType=DECIMAL},
+      seat_price = #{seatPrice,jdbcType=DECIMAL},
+      stand_price = #{standPrice,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="findAllTrain" resultMap="BaseResultMap">
+    SELECT
+	  t.id,
+	  t. NAME,
+	  t.start_date,
+	  t.end_date,
+	  ts.start_time,
+	  ts.end_time,
+	  t.start_address,
+	  t.end_address,
+	  t.type,
+	  t.sleep_price,
+	  t.seat_price,
+	  t.stand_price
+    FROM
+	train t
+    LEFT JOIN train_station ts ON t.id = ts.train_id
+    WHERE ts.end_time='' AND (t.start_date &lt; NOW() AND t.end_date>NOW()) AND t.valid = 1
+  </select>
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.spring.dao.TrainCarMapper" >
+  <resultMap id="BaseResultMap" type="com.spring.entity.TrainCar" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="train_id" property="trainId" jdbcType="BIGINT" />
+    <result column="car_no" property="carNo" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="seat_num" property="seatNum" jdbcType="INTEGER" />
+    <result column="no_mun" property="noMun" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, train_id, car_no, type, seat_num, no_mun
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from train_car
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="selectByTrainId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from train_car
+    where train_id = #{trainId,jdbcType=BIGINT} order by car_no asc
+  </select>
+  
+ 
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from train_car
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.spring.entity.TrainCar" >
+    insert into train_car ( train_id, car_no, 
+      type, seat_num, no_mun
+      )
+    values (#{trainId,jdbcType=BIGINT}, #{carNo,jdbcType=INTEGER}, 
+      #{type,jdbcType=INTEGER}, #{seatNum,jdbcType=INTEGER}, #{noMun,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.spring.entity.TrainCar" >
+    insert into train_car
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="trainId != null" >
+        train_id,
+      </if>
+      <if test="carNo != null" >
+        car_no,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="seatNum != null" >
+        seat_num,
+      </if>
+      <if test="noMun != null" >
+        no_mun,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="trainId != null" >
+        #{trainId,jdbcType=BIGINT},
+      </if>
+      <if test="carNo != null" >
+        #{carNo,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="seatNum != null" >
+        #{seatNum,jdbcType=INTEGER},
+      </if>
+      <if test="noMun != null" >
+        #{noMun,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.spring.entity.TrainCar" >
+    update train_car
+    <set >
+      <if test="trainId != null" >
+        train_id = #{trainId,jdbcType=BIGINT},
+      </if>
+      <if test="carNo != null" >
+        car_no = #{carNo,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="seatNum != null" >
+        seat_num = #{seatNum,jdbcType=INTEGER},
+      </if>
+      <if test="noMun != null" >
+        no_mun = #{noMun,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.spring.entity.TrainCar" >
+    update train_car
+    set train_id = #{trainId,jdbcType=BIGINT},
+      car_no = #{carNo,jdbcType=INTEGER},
+      type = #{type,jdbcType=INTEGER},
+      seat_num = #{seatNum,jdbcType=INTEGER},
+      no_mun = #{noMun,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

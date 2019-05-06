@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.spring.dao.TrainStationMapper" >
+  <resultMap id="BaseResultMap" type="com.spring.entity.TrainStation" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="train_id" property="trainId" jdbcType="BIGINT" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="VARCHAR" />
+    <result column="end_time" property="endTime" jdbcType="VARCHAR" />
+    <result column="sleep_price" property="sleepPrice" jdbcType="DECIMAL" />
+    <result column="seat_price" property="seatPrice" jdbcType="DECIMAL" />
+    <result column="stand_price" property="standPrice" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, train_id, address, sort, start_time, end_time, sleep_price, seat_price, stand_price
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from train_station
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="findStationByMap" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from train_station
+    where train_id=#{trainId}
+   and sort&lt;=(select sort from train_station where train_id=#{trainId} and address=#{end}) order by sort asc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from train_station
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.spring.entity.TrainStation" >
+    insert into train_station ( train_id, address, 
+      sort, start_time, end_time,sleep_price, seat_price, stand_price
+      )
+    values ( #{trainId,jdbcType=BIGINT}, #{address,jdbcType=VARCHAR}, 
+      #{sort,jdbcType=INTEGER}, #{startTime,jdbcType=VARCHAR}, #{endTime,jdbcType=VARCHAR},
+      #{sleepPrice,jdbcType=DECIMAL}, #{seatPrice,jdbcType=DECIMAL}, #{standPrice,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.spring.entity.TrainStation" >
+    insert into train_station
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="trainId != null" >
+        train_id,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="trainId != null" >
+        #{trainId,jdbcType=BIGINT},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.spring.entity.TrainStation" >
+    update train_station
+    <set >
+      <if test="trainId != null" >
+        train_id = #{trainId,jdbcType=BIGINT},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.spring.entity.TrainStation" >
+    update train_station
+    set train_id = #{trainId,jdbcType=BIGINT},
+      address = #{address,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      start_time = #{startTime,jdbcType=VARCHAR},
+      end_time = #{endTime,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
